@@ -15,6 +15,7 @@ import org.apache.commons.cli.ParseException;
  *
  */
 public class App {
+
   public static void main(String[] args) {
     final CommandLineParser parser = new GnuParser();
   
@@ -43,12 +44,39 @@ public class App {
       }
       
       if (line.hasOption("choose")) {
+        // Initiate the "choose" UI
         if (!line.hasOption("outfile")) {
           printHelp(options, "Please specify an output file.");
           System.exit(0);
         }
         // TODO: Implement me!
         throw new RuntimeException("Implement Me! -- implement the choose UI");
+      } else {
+        // validate the --columns option
+        if (!line.hasOption("columns")) {
+          printHelp(options, "Please specify the columns to cut.");
+          System.exit(0);
+        }
+        String columnsOpt = line.getOptionValue("columns");
+        String[] columnsArray = columnsOpt.split(",");
+        if (columnsArray == null || columnsArray.length == 0) {
+          printHelp(options, "Invalid columns option: " + columnsOpt);
+          System.exit(0);
+        }
+
+        // parse the --columns option
+        int[] columns = new int[columnsArray.length];
+        for (int i=0; i<columnsArray.length; i++) {
+          try {
+            columns[i] = Integer.parseInt(columnsArray[i]);
+          } catch (NumberFormatException e) {
+            printHelp(options, "Invalid number format for columns option: " + columnsOpt);
+            System.exit(0);
+          }
+        }
+        
+        new ColumnCutter(infile, columns).run();
+        
       }
     } catch (ParseException e) {
       printHelp(options, e.getLocalizedMessage());
