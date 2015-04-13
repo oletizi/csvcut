@@ -1,6 +1,7 @@
 package com.orionletizi.csv;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -65,7 +66,7 @@ public class App {
         }
 
         // parse the --columns option
-        int[] columns = new int[columnsArray.length];
+        Integer[] columns = new Integer[columnsArray.length];
         for (int i=0; i<columnsArray.length; i++) {
           try {
             columns[i] = Integer.parseInt(columnsArray[i]);
@@ -75,7 +76,12 @@ public class App {
           }
         }
         
-        new ColumnCutter(infile, columns).run();
+        try {
+          new ColumnCutter(infile, System.out, columns).run();
+        } catch (IOException e) {
+          e.printStackTrace();
+          System.exit(0);
+        }
         
       }
     } catch (ParseException e) {
